@@ -241,7 +241,8 @@ function mostrar3paneles(){
 
 }
 
-function cargarInfoPaciente(){
+
+function cargarInfoOperario(){
     $.getJSON("datos/usuario.json", function(data){
         var paciente = data.Nombres+" "+data.Apellidos;
         $('#pacienteNombre').text(paciente);
@@ -249,33 +250,44 @@ function cargarInfoPaciente(){
 }
 
 
-$( document ).ready(function(){
-    cargarInfoPaciente();
+function llenar_info(i) {
+    $("#info-mues h2").text("");
+    $("#info-mues h2").text("Informacion de la muestra " + (i+1));
+    var $par1 = $("<p></p>");
+    var $par2 = $("<p></p>");
+    $("#info-mues p").text("");
+
+    $.getJSON("datos/datos_muestras.json", function(data) {
+        $par1.text("Paciente: "+data[i].paciente);  
+        $par2.text("Información: "+data[i].Info);   
+    });
     
+    $("#info-mues").append($par1);
+    $("#info-mues").append($par2);
+}
+
+function llenarTablaMuestras() {
+    $.getJSON("datos/datos_muestras.json", function(data) {
+        var $tabla = $("#tablaMuestras tbody");
+        $.each(data,function(i) {
+            $tabla.append('<tr id="M'+i+'"><td><span class="tituloMuestra" onclick="llenar_info('+i+');">'+data[i].titulo+'</span><button class="btn btn-default" onclick="">Editar</button>    <button class="btn btn-default" onclick="EliminarItem('+i+')">Eliminar</button></td></tr>');
+        });
+    });
+}
+
+function EliminarItem(i){
+    $("#info-mues h2").remove();    
+    $("#info-mues p").remove();
+    var $a = $("#M"+i).remove();
+}
+
+$( document ).ready(function(){
+    cargarInfoOperario();
+    llenarTablaMuestras();
     // CARGAR INFORMACION DE CENTROS MEDICOS (PANELES Y MODALS)
 
     // CARGAR INFORMACION DEL PACIENTE
-    
-
-    // GALERIA DE IMAGENES
-    $('#carousel').flexslider({
-        animation: "slide",
-        controlNav: false,
-        animationLoop: false,
-        slideshow: false,
-        itemWidth: 120,
-        itemMargin: 30,
-        asNavFor: '#slider'
-    });
-     
-    $('#slider').flexslider({
-        animation: "slide",
-        controlNav: false,
-        animationLoop: false,
-        slideshow: false,
-        sync: "#carousel"
-    });
-
+ 
     // ANIMACION PARA TABS
     var hashTagActive = "";
     $(".scroll").click(function (event) {
